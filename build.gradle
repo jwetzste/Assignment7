@@ -1,0 +1,68 @@
+// The part below needs to be included for Spotbugs
+plugins {
+    id  'com.github.spotbugs' version '1.6.5'
+}
+
+apply plugin: 'application'
+
+repositories {
+	mavenCentral()
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Configure Checkstyle
+///////////////////////////////////////////////////////////////////////////
+apply plugin: 'checkstyle'
+checkstyle {
+  // Keep checkstyle a little quieter
+  ignoreFailures = true
+  showViolations = false
+}
+
+tasks.withType(Checkstyle) {
+  reports {
+    html.enabled = true
+    xml.enabled = false
+  }
+}
+checkstyle {
+    toolVersion = "8.8"
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Configure SpotBugs
+///////////////////////////////////////////////////////////////////////////
+
+//The part below needs to be included for Spotbugs
+spotbugs {
+   toolVersion = '3.1.1'
+}
+
+// To generate an HTML report instead of XML
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+sourceSets.main.java.srcDirs = ['src']
+mainClassName = 'main.Main'
+
+dependencies {
+}
+
+run {
+}
+
+task fatJar(type: Jar) {
+	manifest {
+		attributes 'Main-Class': 'main.Main'
+	}
+	baseName = 'wetzsteon_apiary'
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+
+
